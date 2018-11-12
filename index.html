@@ -104,10 +104,13 @@
         var playerCards;
         var computerCards;
         var score = 0;
+        var t0;
+        var t1;
 
         document.getElementById("newGame").addEventListener("click", newGame);
 
         function newGame() {
+            t0 = performance.now();
             document.getElementById("newGame").innerHTML = "Draw";
             document.getElementById("newGame").removeEventListener("click", newGame);
             document.getElementById("newGame").addEventListener("click", drawCard);
@@ -134,6 +137,9 @@
                 score += match(playerCard, computerCard);
 
                 document.getElementById('score').innerHTML = score;
+            } else {
+                t1 = performance.now();
+                alert("Call to doSomething took " + (t1 - t0) + " milliseconds.")
             }
         }
 
