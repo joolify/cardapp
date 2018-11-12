@@ -1,0 +1,75 @@
+﻿body {
+    font-family: 'Josefin Sans', sans-serif;
+    background-image: url("images/background.jpg");
+    background-size: cover;
+}
+
+.card {
+    width: 50%;
+    height: 20%;
+}
+
+.column {
+    float: left;
+    width: 25%;
+    padding: 5px;
+}
+
+.row {
+    width: 800px;
+    content: "";
+    clear: both;
+    display: block;
+}
+
+.scoreBoard {
+    clear: both;
+}
+
+thead {
+    font-weight: bold;
+}
+
+.controlBoard {
+    clear: both;
+}
+
+.container {
+    position: absolute;
+    padding: 10px;
+    height: 80%;
+    width: 80%;
+    top: 10%;
+    left: 10%;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 25px;
+    box-shadow: 0 9px #666;
+}
+
+.button {
+    padding: 15px 25px;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+
+.button:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.button:hover {
+    background-color: #3e8e41;
+}
+
+.controlBoard {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
