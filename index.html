@@ -99,25 +99,42 @@
         </main>
     </div>
     <script>
+        var deck;
+        var dealtCards;
+        var playerCards;
+        var computerCards;
+        var score = 0;
+
         document.getElementById("newGame").addEventListener("click", newGame);
 
         function newGame() {
-            var deck = getDeck();
+            document.getElementById("newGame").innerHTML = "Draw";
+            document.getElementById("newGame").removeEventListener("click", newGame);
+            document.getElementById("newGame").addEventListener("click", drawCard);
 
-            var dealtCards = dealCards(deck);
+            deck = getDeck();
 
-            var playerCards = dealtCards.playerCards;
-            var computerCards = dealtCards.computerCards;
+            dealtCards = dealCards(deck);
 
-            while (playerCards.length > 0) {
+            playerCards = dealtCards.playerCards;
+            computerCards = dealtCards.computerCards;
+
+            console.log(playerCards.length);
+            console.log(computerCards.length);
+        }
+
+        function drawCard() {
+            if (playerCards.length > 0) {
                 var playerCard = draw(playerCards);
                 var computerCard = draw(computerCards);
-                console.log(playerCard);
 
-                var score = match(playerCard, computerCard);
+                document.getElementById("playerCard").src = "images/" + playerCard + ".png";
+                document.getElementById("computerCard").src = "images/" + computerCard + ".png";
+
+                score += match(playerCard, computerCard);
+
                 document.getElementById('score').innerHTML = score;
             }
-
         }
 
         function draw(deck) {
@@ -134,7 +151,7 @@
         function dealCards(deck) {
             var indexToSplit = deck.length / 2;
             var first = deck.slice(0, indexToSplit);
-            var second = deck.slice(indexToSplit + 1);
+            var second = deck.slice(indexToSplit);
 
             return { playerCards: first, computerCards: second };
         }
