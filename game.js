@@ -104,11 +104,18 @@ function drawCard() {
         lastCard = playerCard.toString;
 
         document.getElementById("playerCard").src = "images/" + playerCard.toString + ".png";
-        document.getElementById("computerCard").src = "images/" + computerCard.toString + ".png";
 
-        score += match(playerCard, computerCard);
-
-        document.getElementById('score').innerHTML = score;
+        document.getElementById("computerCard").src = "images/loading.gif";
+        document.getElementById("newGame").disabled = true;
+        document.getElementById("pauseGame").disabled = true;
+        window.setTimeout(
+            function () {
+                document.getElementById("computerCard").src = "images/" + computerCard.toString + ".png";
+                score += match(playerCard, computerCard);
+                document.getElementById('score').innerHTML = score;
+                document.getElementById("newGame").disabled = false;
+                document.getElementById("pauseGame").disabled = false;
+            }, Math.floor(Math.random() * 3000));
 
     } else {
         clearInterval(interval);
