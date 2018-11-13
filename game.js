@@ -2,11 +2,14 @@
 let dealtCards;
 let playerCards;
 let computerCards;
-let score;
-let totalSeconds;
 let interval;
-let isPaused = false;
 let lastCard = "none";
+
+let gameState = {
+    score: null,
+    totalSeconds: null,
+    isPaused: false
+};
 
 document.getElementById("newGame").addEventListener("click", newGame);
 document.getElementById("pauseGame").addEventListener("click", pauseGame);
@@ -26,11 +29,12 @@ function showScoreBoard() {
 }
 
 function newGame() {
-    totalSeconds = 0;
-    score = 0;
+    gameState.score = 0;
+    gameState.totalSeconds = 0;
+
     document.getElementById("seconds").innerHTML = "00";
     document.getElementById("minutes").innerHTML = "00";
-
+        
     document.getElementById("saveGame").disabled = true;
     document.getElementById("pauseGame").disabled = false;
 
@@ -53,7 +57,7 @@ function newGame() {
 }
 
 function pauseGame() {
-    isPaused = true;
+    gameState.isPaused = true;
     document.getElementById("newGame").disabled = true;
     document.getElementById("pauseGame").innerHTML = "Start";
     document.getElementById("pauseGame").removeEventListener("click", pauseGame);
@@ -61,7 +65,7 @@ function pauseGame() {
 }
 
 function startGame() {
-    isPaused = false;
+    gameState.isPaused = false;
     document.getElementById("newGame").disabled = false;
     document.getElementById("pauseGame").innerHTML = "Pause";
     document.getElementById("pauseGame").removeEventListener("click", startGame);
@@ -84,11 +88,11 @@ function saveGame() {
         newDate.appendChild(dateText);
 
         let newScore = newRow.insertCell(2);
-        let scoreText = document.createTextNode(score);
+        let scoreText = document.createTextNode(gameState.score);
         newScore.appendChild(scoreText);
 
         let newTime = newRow.insertCell(3);
-        let timeText = document.createTextNode(totalSeconds);
+        let timeText = document.createTextNode(gameState.totalSeconds);
         newTime.appendChild(timeText);
 
         showScoreBoard();
@@ -111,8 +115,8 @@ function drawCard() {
         window.setTimeout(
             function () {
                 document.getElementById("computerCard").src = "images/" + computerCard.toString + ".png";
-                score += match(playerCard, computerCard);
-                document.getElementById('score').innerHTML = score;
+                gameState.score += match(playerCard, computerCard);
+                document.getElementById('score').innerHTML = gameState.score;
                 document.getElementById("newGame").disabled = false;
                 document.getElementById("pauseGame").disabled = false;
             }, Math.floor(Math.random() * 3000));
@@ -126,20 +130,20 @@ function drawCard() {
         document.getElementById("newGame").innerHTML = "New Game";
         document.getElementById("newGame").removeEventListener("click", drawCard);
         document.getElementById("newGame").addEventListener("click", newGame);
-        if (score > 0) {
-            alert("You won! Your score was: " + score);
+        if (gameState.score > 0) {
+            alert("You won! Your score was: " + gameState.score);
         } else {
-            alert("You lost! Your score was: " + score);
+            alert("You lost! Your score was: " + gameState.score);
         }
         document.getElementById("saveGame").disabled = false;
     }
 }
 
 function setTime() {
-    if (!isPaused) {
-        ++totalSeconds;
-        document.getElementById("seconds").innerHTML = pad(totalSeconds % 60);
-        document.getElementById("minutes").innerHTML = pad(parseInt(totalSeconds / 60));
+    if (!gameState.isPaused) {
+        gameState.totalSeconds++;
+        document.getElementById("seconds").innerHTML = pad(gameState.totalSeconds % 60);
+        document.getElementById("minutes").innerHTML = pad(parseInt(gameState.totalSeconds / 60));
     }
 }
 
