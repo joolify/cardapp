@@ -7,8 +7,9 @@
 }
 
 .card {
-    width: 50%;
-    height: 20%;
+    max-width: 50%;
+    display: block;
+    height: auto;
 }
 
 .column {
@@ -18,7 +19,7 @@
 }
 
 .row {
-    width: 800px;
+    max-width: 800px;
     content: "";
     clear: both;
     display: block;

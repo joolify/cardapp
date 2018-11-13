@@ -1,12 +1,12 @@
-﻿var deck;
-var dealtCards;
-var playerCards;
-var computerCards;
-var score;
-var totalSeconds;
-var interval;
-var isPaused = false;
-var lastCard = "none";
+﻿let deck;
+let dealtCards;
+let playerCards;
+let computerCards;
+let score;
+let totalSeconds;
+let interval;
+let isPaused = false;
+let lastCard = "none";
 
 document.getElementById("newGame").addEventListener("click", newGame);
 document.getElementById("pauseGame").addEventListener("click", pauseGame);
@@ -14,6 +14,16 @@ document.getElementById("saveGame").addEventListener("click", saveGame);
 
 document.getElementById("saveGame").disabled = true;
 document.getElementById("pauseGame").disabled = true;
+
+showScoreBoard();
+
+function showScoreBoard() {
+    let rows = document.getElementById('scoreBoard').getElementsByTagName('tbody')[0].rows.length;
+    if (rows === 0)
+        document.getElementById('scoreBoard').style.visibility = "hidden";
+    else
+        document.getElementById('scoreBoard').style.visibility = "visible";
+}
 
 function newGame() {
     totalSeconds = 0;
@@ -59,39 +69,42 @@ function startGame() {
 }
 
 function saveGame() {
-    var tableRef = document.getElementById('scoreBoard').getElementsByTagName('tbody')[0];
-    var newRow = tableRef.insertRow(tableRef.rows.length);
+    let name = prompt("Please enter a name:");
 
-    var newName = newRow.insertCell(0);
-    var nameText = document.createTextNode("Joel");
-    newName.appendChild(nameText);
+    if (name !== null) {
+        let tableRef = document.getElementById('scoreBoard').getElementsByTagName('tbody')[0];
+        let newRow = tableRef.insertRow(tableRef.rows.length);
 
-    var newDate = newRow.insertCell(1);
-    var dateText = document.createTextNode(getDate());
-    newDate.appendChild(dateText);
+        let newName = newRow.insertCell(0);
+        let nameText = document.createTextNode(name);
+        newName.appendChild(nameText);
 
-    var newScore = newRow.insertCell(2);
-    var scoreText = document.createTextNode(score);
-    newScore.appendChild(scoreText);
+        let newDate = newRow.insertCell(1);
+        let dateText = document.createTextNode(getDate());
+        newDate.appendChild(dateText);
 
-    var newTime = newRow.insertCell(3);
-    var timeText = document.createTextNode(totalSeconds);
-    newTime.appendChild(timeText);
+        let newScore = newRow.insertCell(2);
+        let scoreText = document.createTextNode(score);
+        newScore.appendChild(scoreText);
 
+        let newTime = newRow.insertCell(3);
+        let timeText = document.createTextNode(totalSeconds);
+        newTime.appendChild(timeText);
+
+        showScoreBoard();
+    }
     document.getElementById("saveGame").disabled = true;
-
 }
 
 function drawCard() {
     if (playerCards.length > 0) {
         document.getElementById("discardCard").src = "images/" + lastCard + ".png";
-        var playerCard = draw(playerCards);
-        var computerCard = draw(computerCards);
+        let playerCard = draw(playerCards);
+        let computerCard = draw(computerCards);
         lastCard = playerCard.toString;
 
         document.getElementById("playerCard").src = "images/" + playerCard.toString + ".png";
         document.getElementById("computerCard").src = "images/" + computerCard.toString + ".png";
-        console.log(playerCard.suit + ", " + playerCard.value);
 
         score += match(playerCard, computerCard);
 
@@ -124,7 +137,7 @@ function setTime() {
 }
 
 function pad(val) {
-    var valString = val + "";
+    let valString = val + "";
     if (valString.length < 2) {
         return "0" + valString;
     } else {
@@ -144,31 +157,31 @@ function match(card1, card2) {
     return -1;
 }
 function dealCards(deck) {
-    var indexToSplit = deck.length / 2;
-    var first = deck.slice(0, indexToSplit);
-    var second = deck.slice(indexToSplit);
+    let indexToSplit = deck.length / 2;
+    let first = deck.slice(0, indexToSplit);
+    let second = deck.slice(indexToSplit);
 
     return { playerCards: first, computerCards: second };
 }
 
 function shuffle(deck) {
-    for (var i = 0; i < 1000; i++) {
-        var location1 = Math.floor((Math.random() * deck.length));
-        var location2 = Math.floor((Math.random() * deck.length));
-        var tmp = deck[location1];
+    for (let i = 0; i < 1000; i++) {
+        let location1 = Math.floor((Math.random() * deck.length));
+        let location2 = Math.floor((Math.random() * deck.length));
+        let tmp = deck[location1];
 
         deck[location1] = deck[location2];
         deck[location2] = tmp;
     }
 }
 function getDeck() {
-    var deck = new Array();
-    var suits = ["S", "D", "C", "H"];
-    var values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"];
+    let deck = new Array();
+    let suits = ["S", "D", "C", "H"];
+    let values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"];
 
-    for (var i = 0; i < suits.length; i++) {
-        for (var x = 0; x < values.length; x++) {
-            var card = { value: values[x], suit: suits[i], toString: values[x] + suits[i] };
+    for (let i = 0; i < suits.length; i++) {
+        for (let x = 0; x < values.length; x++) {
+            let card = { value: values[x], suit: suits[i], toString: values[x] + suits[i] };
             deck.push(card);
         }
     }
@@ -179,11 +192,11 @@ function getDeck() {
 }
 
 function getDate() {
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1;
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1;
 
-    var yyyy = today.getFullYear();
+    let yyyy = today.getFullYear();
     if (dd < 10) {
         dd = '0' + dd;
     }
