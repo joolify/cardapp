@@ -14,8 +14,8 @@
         <section class="sidenav">
             <div class="btn-group">
                 <button class="button" id="newGame">New game</button>
-                <button class="button">Pause</button>
-                <button class="button">Save</button>
+                <button class="button" id="pauseGame">Pause</button>
+                <button class="button" id="saveGame">Save</button>
             </div>
         </section>
 
@@ -29,7 +29,7 @@
                     </ul>
                 </nav>
                 <section>
-                    <time>00:00</time>
+                    <time><label id="minutes">00</label><span class='bigger'>:</span><label id="seconds">00</label></time>
                     <div>Current score: <span id="score">0</span></div>
                 </section>
             </header>
@@ -53,16 +53,16 @@
                     <img src="images/red_back.png" class="card" id="deckCard" />
                 </div>
                 <div class="column">
-                    <img src="images/0C.png" class="card" id="playerCard" />
+                    <img src="images/none.png" class="card" id="playerCard" />
                 </div>
                 <div class="column">
-                    <img src="images/5H.png" class="card" id="computerCard" />
+                    <img src="images/none.png" class="card" id="computerCard" />
                 </div>
                 <div class="column">
-                    <img src="images/KC.png" class="card" id="discardCard" />
+                    <img src="images/none.png" class="card" id="discardCard" />
                 </div>
             </div>
-            <table class="scoreBoard">
+            <table class="scoreBoard" id="scoreBoard">
                 <thead>
                     <tr>
                         <td>
@@ -79,115 +79,10 @@
                         </td>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            Joel
-                        </td>
-                        <td>
-                            <time>2018-11-12</time>
-                        </td>
-                        <td>
-                            50
-                        </td>
-                        <td>
-                            100
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
         </main>
     </div>
-    <script>
-        var deck;
-        var dealtCards;
-        var playerCards;
-        var computerCards;
-        var score = 0;
-        var t0;
-        var t1;
-
-        document.getElementById("newGame").addEventListener("click", newGame);
-
-        function newGame() {
-            t0 = performance.now();
-            document.getElementById("newGame").innerHTML = "Draw";
-            document.getElementById("newGame").removeEventListener("click", newGame);
-            document.getElementById("newGame").addEventListener("click", drawCard);
-
-            deck = getDeck();
-
-            dealtCards = dealCards(deck);
-
-            playerCards = dealtCards.playerCards;
-            computerCards = dealtCards.computerCards;
-
-            console.log(playerCards.length);
-            console.log(computerCards.length);
-        }
-
-        function drawCard() {
-            if (playerCards.length > 0) {
-                var playerCard = draw(playerCards);
-                var computerCard = draw(computerCards);
-
-                document.getElementById("playerCard").src = "images/" + playerCard + ".png";
-                document.getElementById("computerCard").src = "images/" + computerCard + ".png";
-
-                score += match(playerCard, computerCard);
-
-                document.getElementById('score').innerHTML = score;
-            } else {
-                t1 = performance.now();
-                alert("Call to doSomething took " + (t1 - t0) + " milliseconds.")
-            }
-        }
-
-        function draw(deck) {
-            return deck.pop();
-        }
-
-        function match(card1, card2) {
-            if (card1.slice(0, 1) === card2.slice(0, 1))
-                return 1;
-            if (card1.slice(1, 2) === card2.slice(1, 2))
-                return 1;
-            return -1;
-        }
-        function dealCards(deck) {
-            var indexToSplit = deck.length / 2;
-            var first = deck.slice(0, indexToSplit);
-            var second = deck.slice(indexToSplit);
-
-            return { playerCards: first, computerCards: second };
-        }
-
-        function shuffle(deck) {
-            for (var i = 0; i < 1000; i++) {
-                var location1 = Math.floor((Math.random() * deck.length));
-                var location2 = Math.floor((Math.random() * deck.length));
-                var tmp = deck[location1];
-
-                deck[location1] = deck[location2];
-                deck[location2] = tmp;
-            }
-        }
-        function getDeck() {
-            var deck = new Array();
-            var suits = ["S", "D", "C", "H"];
-            var values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"];
-
-            for (var i = 0; i < suits.length; i++) {
-                for (var x = 0; x < values.length; x++) {
-                    var card = values[x] + suits[i];
-                    deck.push(card);
-                }
-            }
-
-            shuffle(deck);
-
-            return deck;
-        }
-    </script>
+    <script type="text/javascript" src="game.js"></script>
 </body>
 </html>

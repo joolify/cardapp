@@ -26,6 +26,11 @@
 
 .scoreBoard {
     clear: both;
+    width: 100%;
+    background: #4CAF50;
+    padding: 5px;
+    color: #ffffff;
+    border-radius: 5px;
 }
 
 thead {
@@ -85,6 +90,10 @@ main {
 
 .button:hover {
     background-color: #3e8e41;
+}
+
+.button:disabled {
+    background: #dddddd;
 }
 
 .controlBoard {
