@@ -22,7 +22,7 @@ init();
 showScoreBoard();
 
 function init() {
-    var scores = JSON.parse(localStorage.getItem('scores'));
+    let scores = JSON.parse(localStorage.getItem('scores'));
     if (scores !== null) {
         let tableRef = document.getElementById('scoreBoard').getElementsByTagName('tbody')[0];
         scores.forEach(
@@ -124,14 +124,14 @@ function saveGame() {
         let timeText = document.createTextNode(gameState.totalSeconds);
         newTime.appendChild(timeText);
 
-        var scoreObj = {
+        let scoreObj = {
             name: name,
             date: nowDate,
             score: gameState.score,
             time: gameState.totalSeconds
         };
 
-        var scores = JSON.parse(localStorage.getItem('scores'));
+        let scores = JSON.parse(localStorage.getItem('scores'));
         if (scores === null) {
             localStorage.setItem('scores', JSON.stringify([scoreObj]));
         } else {
@@ -174,6 +174,7 @@ function drawCard() {
         document.getElementById("newGame").innerHTML = "New Game";
         document.getElementById("newGame").removeEventListener("click", drawCard);
         document.getElementById("newGame").addEventListener("click", newGame);
+
         if (gameState.score > 0) {
             alert("You won! Your score was: " + gameState.score);
         } else {
