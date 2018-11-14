@@ -7,7 +7,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap-reboot.css" />
     <link rel="stylesheet" type="text/css" href="style.css" />
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="game.js"></script>
 </head>
 <body>
     <div class="container">
@@ -29,8 +30,8 @@
                     </ul>
                 </nav>
                 <section>
-                    <img src="images/time.svg" width="20" height="20"/> <time><label id="minutes">00</label><span class='bigger'>:</span><label id="seconds">00</label></time>
-                    <img src="images/score.svg" width="20" height="20"/> <span>Current score: <span id="score">0</span></span>
+                    <img src="images/time.svg" width="20" height="20" /> <time><label id="minutes">00</label><span class='bigger'>:</span><label id="seconds">00</label></time>
+                    <img src="images/score.svg" width="20" height="20" /> <span>Current score: <span id="score">0</span></span>
                 </section>
             </header>
 
@@ -50,7 +51,7 @@
             </div>
             <div class="row">
                 <div class="column">
-                    <img src="images/red_back.png" class="card" id="deckCard" />
+                    <img src="images/none.png" class="card" id="deckCard" />
                 </div>
                 <div class="column">
                     <img src="images/none.png" class="card" id="playerCard" />
@@ -83,6 +84,5 @@
             </table>
         </main>
     </div>
-    <script type="text/javascript" src="game.js"></script>
 </body>
 </html>
