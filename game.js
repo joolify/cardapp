@@ -6,8 +6,10 @@
     lastPlayerCard: "none",
     lastComputerCard: "none",
     timer: null,
+    gameloop: null,
     deckid: null,
-    baseUrl: "https://deckofcardsapi.com/api/deck/"
+    baseUrl: "https://deckofcardsapi.com/api/deck/",
+    gameOver: false
 };
 
 $(function () {
@@ -18,17 +20,17 @@ $(function () {
     $("#saveGame").prop("disabled", true);
     $("#pauseGame").prop("disabled", true);
 
-    initScoreBoard();
     showScoreBoard();
 });
 
-function initScoreBoard() {
+function showScoreBoard() {
     let scores = JSON.parse(localStorage.getItem("scores"));
     if (scores !== null) {
+        scores.sort(SortByName);
         let tableRef = $("#scoreBoard tbody");
+        tableRef.empty();
         scores.forEach(
             function (score) {
-
                 tableRef.append("<tr><td>" +
                     score.name +
                     "</td><td>" +
@@ -42,12 +44,9 @@ function initScoreBoard() {
         );
     }
 }
-function showScoreBoard() {
-    let rows = $("#scoreBoard >tbody >tr").length;
-    if (rows === 0)
-        $("#scoreBoard").hide();
-    else
-        $("#scoreBoard").show();
+
+function SortByName(a, b) {
+    return ((a.score < b.score) ? 1 : ((a.score > b.score) ? -1 : 0));
 }
 
 function newGame() {
@@ -66,12 +65,15 @@ function newGame() {
     $("#computerCard").attr("src", "images/none.png");
     $("#discardCard").attr("src", "images/none.png");
 
-    $.getJSON("https://deckofcardsapi.com/api/deck/new/shuffle/")
+    $.getJSON(gameState.baseUrl + "new/shuffle/")
         .done(function (data) {
             gameState.deckid = data.deck_id;
             gameState.remaining = data.remaining;
 
-            drawCards();
+            drawPlayerCard();
+
+            $("#computerCard").attr("src", "images/loading.gif");
+            gameState.gameloop = setInterval(drawComputerCard, Math.floor(Math.random() * 3000));
         });
 
     gameState.timer = setInterval(setTime, 1000);
@@ -84,6 +86,7 @@ function pauseGame() {
     $("#pauseGame").click(startGame);
     $("#playerCard").off("click");
     $("#playerCard").removeClass("clickable");
+    clearInterval(gameState.gameloop);
 }
 
 function startGame() {
@@ -93,27 +96,16 @@ function startGame() {
     $("#pauseGame").click(pauseGame);
     $("#playerCard").click(playCard);
     $("#playerCard").addClass("clickable");
+    gameState.gameloop = setInterval(drawComputerCard, Math.floor(Math.random() * 3000));
 }
 
 function saveGame() {
     let name = prompt("Please enter a name:");
 
     if (name !== null) {
-        let tableRef = $("#scoreBoard tbody");
-        let nowDate = getDate();
-        tableRef.append("<tr><td>" +
-            name +
-            "</td><td>" +
-            nowDate +
-            "</td><td>" +
-            gameState.score +
-            "</td><td>" +
-            formatTime(gameState.time) +
-            "</td></tr>");
-
         let scoreObj = {
             name: name,
-            date: nowDate,
+            date: getDate(),
             score: gameState.score,
             time: gameState.time
         };
@@ -132,13 +124,14 @@ function saveGame() {
 }
 
 function isGameOver() {
-    if (gameState.remaining > 0) {
-        $("#newGame").prop("disabled", true);
-        $("#pauseGame").prop("disabled", true);
-
+    if (gameState.remaining > 0)
         return false;
-    } else {
+
+    if (!gameState.gameOver) {
+        gameState.gameOver = true;
         clearInterval(gameState.timer);
+        clearInterval(gameState.gameloop);
+
         $("#deckCard").attr("src", "images/none.png");
 
         if (gameState.score > 0) {
@@ -154,40 +147,39 @@ function isGameOver() {
     }
 }
 
-function drawCards() {
-    $("#playerCard").attr("src", "images/loading.gif");
-    $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
-        .done(function (deck) {
-            drawPlayerCard(deck);
+function drawPlayerCard() {
+    if (!isGameOver()) {
+        $("#playerCard").attr("src", "images/loading.gif");
+        $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
+            .done(function (deck) {
+                gameState.remaining = deck.remaining;
 
-            $("#computerCard").attr("src", "images/loading.gif");
-
-            window.setTimeout(
-                function () {
-                    drawComputerCard();
-                }, Math.floor(Math.random() * 3000));
-        });
-}
-
-function drawPlayerCard(deck) {
-    gameState.remaining = deck.remaining;
-    let playerCard = deck.cards[0];
-    $("#playerCard").attr("src", playerCard.image);
-    gameState.lastPlayerCard = playerCard;
+                let playerCard = deck.cards[0];
+                if (playerCard !== undefined) {
+                    $("#playerCard").attr("src", playerCard.image);
+                    gameState.lastPlayerCard = playerCard;
+                    $("#playerCard").click(playCard);
+                    $("#playerCard").addClass("clickable");
+                }
+            });
+    }
 }
 
 function drawComputerCard() {
-    $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
-        .done(function (deck) {
-            gameState.remaining = deck.remaining;
+    if (!isGameOver()) {
+        $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
+            .done(function (deck) {
+                $("#discardCard").attr("src", gameState.lastComputerCard.image);
+                gameState.remaining = deck.remaining;
 
-            let computerCard = deck.cards[0];
-            $("#computerCard").attr("src", computerCard.image);
-            $("#pauseGame").prop("disabled", false);
-            $("#playerCard").click(playCard);
-            $("#playerCard").addClass("clickable");
-            gameState.lastComputerCard = computerCard;
-        });
+                let computerCard = deck.cards[0];
+                if (computerCard !== undefined) {
+                    $("#computerCard").attr("src", computerCard.image);
+                    $("#pauseGame").prop("disabled", false);
+                    gameState.lastComputerCard = computerCard;
+                }
+            });
+    }
 }
 
 function playCard() {
@@ -198,8 +190,8 @@ function playCard() {
     $("#playerCard").removeClass("clickable");
     $("#discardCard").attr("src", gameState.lastPlayerCard.image);
 
-    if (!isGameOver())
-        drawCards();
+    drawPlayerCard();
+    drawComputerCard();
 }
 
 function match(card1, card2) {
@@ -221,6 +213,7 @@ function setTime() {
 function formatTime(time) {
     return pad(parseInt(time / 60)) + ":" + pad(time % 60);
 }
+
 function pad(val) {
     let valString = val + "";
     if (valString.length < 2) {
