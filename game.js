@@ -2,10 +2,10 @@
     score: null,
     time: null,
     isPaused: false,
-    playerCards: null,
-    computerCards: null,
+    remaining: null,
     lastCard: "none",
-    timer: null
+    timer: null,
+    deckid: null
 };
 
 $(function () {
@@ -55,6 +55,7 @@ function newGame() {
     $("#seconds").html("00");
     $("#minutes").html("00");
 
+    $("#newGame").prop("disabled", true);
     $("#saveGame").prop("disabled", true);
     $("#pauseGame").prop("disabled", false);
 
@@ -63,16 +64,23 @@ function newGame() {
     $("#computerCard").attr("src", "images/none.png");
     $("#discardCard").attr("src", "images/none.png");
 
-    $("#newGame").html("Draw");
-    $("#newGame").off("click");
-    $("#newGame").click(drawCard);
+    $.getJSON("https://deckofcardsapi.com/api/deck/new/shuffle/")
+        .done(function (data) {
+            gameState.deckid = data.deck_id;
+            gameState.remaining = data.remaining;
+            $("#newGame").prop("disabled", false);
+            $("#newGame").html("Draw");
+            $("#newGame").off("click");
+            $("#newGame").click(drawCard);
+        });
 
+    /*
     let deck = getDeck();
-
     let dealtCards = dealCards(deck);
 
     gameState.playerCards = dealtCards.playerCards;
     gameState.computerCards = dealtCards.computerCards;
+    */
     gameState.timer = setInterval(setTime, 1000);
 }
 
@@ -129,25 +137,10 @@ function saveGame() {
 }
 
 function drawCard() {
-    if (gameState.playerCards.length > 0) {
-        $("#discardCard").attr("src", "images/" + gameState.lastCard + ".png");
-        let playerCard = draw(gameState.playerCards);
-        let computerCard = draw(gameState.computerCards);
-        gameState.lastCard = playerCard.toString;
+    if (gameState.remaining > 0) {
+        $("#discardCard").attr("src", gameState.lastCard.image);
 
-        $("#playerCard").attr("src", "images/" + playerCard.toString + ".png");
-
-        $("#computerCard").attr("src", "images/loading.gif");
-        $("#newGame").prop("disabled", true);
-        $("#pauseGame").prop("disabled", true);
-        window.setTimeout(
-            function () {
-                $("#computerCard").attr("src", "images/" + computerCard.toString + ".png");
-                gameState.score += match(playerCard, computerCard);
-                $("#score").html(gameState.score);
-                $("#newGame").prop("disabled", false);
-                $("#pauseGame").prop("disabled", false);
-            }, Math.floor(Math.random() * 3000));
+        drawCards();
 
     } else {
         clearInterval(gameState.timer);
@@ -168,6 +161,54 @@ function drawCard() {
     }
 }
 
+function drawCards() {
+    $("#playerCard").attr("src", "images/loading.gif");
+    $.getJSON("https://deckofcardsapi.com/api/deck/" + gameState.deckid + "/draw/", { count: 1 })
+        .done(function (deck) {
+            let playerCard = drawPlayerCard(deck);
+
+            $("#computerCard").attr("src", "images/loading.gif");
+            $("#newGame").prop("disabled", true);
+            $("#pauseGame").prop("disabled", true);
+
+            window.setTimeout(
+                function () {
+                    drawComputerCard(playerCard);
+                }, Math.floor(Math.random() * 3000));
+        });
+}
+
+function drawPlayerCard(deck) {
+    gameState.remaining = deck.remaining;
+    let playerCard = deck.cards[0];
+    $("#playerCard").attr("src", playerCard.image);
+    gameState.lastCard = playerCard;
+    return playerCard;
+}
+
+function drawComputerCard(playerCard) {
+    $.getJSON("https://deckofcardsapi.com/api/deck/" + gameState.deckid + "/draw/", { count: 1 })
+        .done(function (deck) {
+            gameState.remaining = deck.remaining;
+            let computerCard = deck.cards[0];
+            $("#computerCard").attr("src", computerCard.image);
+            gameState.score += match(playerCard, computerCard);
+            $("#score").html(gameState.score);
+            $("#newGame").prop("disabled", false);
+            $("#pauseGame").prop("disabled", false);
+        });
+}
+
+
+
+function match(card1, card2) {
+    if (card1.code.slice(0, 1) === card2.code.slice(0, 1))
+        return 1;
+    if (card1.code.slice(1, 2) === card2.code.slice(1, 2))
+        return 1;
+    return -1;
+}
+
 function setTime() {
     if (!gameState.isPaused) {
         gameState.time++;
@@ -183,52 +224,6 @@ function pad(val) {
     } else {
         return valString;
     }
-}
-
-function draw(deck) {
-    return deck.pop();
-}
-
-function match(card1, card2) {
-    if (card1.value === card2.value)
-        return 1;
-    if (card1.suit === card2.suit)
-        return 1;
-    return -1;
-}
-function dealCards(deck) {
-    let indexToSplit = deck.length / 2;
-    let first = deck.slice(0, indexToSplit);
-    let second = deck.slice(indexToSplit);
-
-    return { playerCards: first, computerCards: second };
-}
-
-function shuffle(deck) {
-    for (let i = 0; i < 1000; i++) {
-        let location1 = Math.floor((Math.random() * deck.length));
-        let location2 = Math.floor((Math.random() * deck.length));
-        let tmp = deck[location1];
-
-        deck[location1] = deck[location2];
-        deck[location2] = tmp;
-    }
-}
-function getDeck() {
-    let deck = new Array();
-    let suits = ["S", "D", "C", "H"];
-    let values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"];
-
-    for (let i = 0; i < suits.length; i++) {
-        for (let x = 0; x < values.length; x++) {
-            let card = { value: values[x], suit: suits[i], toString: values[x] + suits[i] };
-            deck.push(card);
-        }
-    }
-
-    shuffle(deck);
-
-    return deck;
 }
 
 function getDate() {
