@@ -13,15 +13,15 @@ $(function () {
     $("#pauseGame").click(pauseGame);
     $("#saveGame").click(saveGame);
 
-    $("#saveGame").prop('disabled', true);
-    $("#pauseGame").prop('disabled', true);
+    $("#saveGame").prop("disabled", true);
+    $("#pauseGame").prop("disabled", true);
 
-    init();
+    initScoreBoard();
     showScoreBoard();
 });
 
-function init() {
-    let scores = JSON.parse(localStorage.getItem('scores'));
+function initScoreBoard() {
+    let scores = JSON.parse(localStorage.getItem("scores"));
     if (scores !== null) {
         let tableRef = $("#scoreBoard tbody");
         scores.forEach(
@@ -41,7 +41,7 @@ function init() {
     }
 }
 function showScoreBoard() {
-    let rows = $('#scoreBoard >tbody >tr').length;
+    let rows = $("#scoreBoard >tbody >tr").length;
     if (rows === 0)
         $("#scoreBoard").hide();
     else
@@ -55,8 +55,8 @@ function newGame() {
     $("#seconds").html("00");
     $("#minutes").html("00");
 
-    $("#saveGame").prop('disabled', true);
-    $("#pauseGame").prop('disabled', false);
+    $("#saveGame").prop("disabled", true);
+    $("#pauseGame").prop("disabled", false);
 
     $("#deckCard").attr("src", "images/red_back.png");
     $("#playerCard").attr("src", "images/none.png");
@@ -78,7 +78,7 @@ function newGame() {
 
 function pauseGame() {
     gameState.isPaused = true;
-    $("#newGame").prop('disabled', true);
+    $("#newGame").prop("disabled", true);
     $("#pauseGame").html("Start");
     $("#pauseGame").off("click");
     $("#pauseGame").click(startGame);
@@ -86,7 +86,7 @@ function pauseGame() {
 
 function startGame() {
     gameState.isPaused = false;
-    $("#newGame").prop('disabled', false);
+    $("#newGame").prop("disabled", false);
     $("#pauseGame").html("Pause");
     $("#pauseGame").off("click");
     $("#pauseGame").click(pauseGame);
@@ -115,17 +115,17 @@ function saveGame() {
             time: gameState.time
         };
 
-        let scores = JSON.parse(localStorage.getItem('scores'));
+        let scores = JSON.parse(localStorage.getItem("scores"));
         if (scores === null) {
-            localStorage.setItem('scores', JSON.stringify([scoreObj]));
+            localStorage.setItem("scores", JSON.stringify([scoreObj]));
         } else {
             scores.push(scoreObj);
-            localStorage.setItem('scores', JSON.stringify(scores));
+            localStorage.setItem("scores", JSON.stringify(scores));
         }
 
         showScoreBoard();
     }
-    $("#saveGame").prop('disabled', true);
+    $("#saveGame").prop("disabled", true);
 }
 
 function drawCard() {
@@ -238,11 +238,11 @@ function getDate() {
 
     let yyyy = today.getFullYear();
     if (dd < 10) {
-        dd = '0' + dd;
+        dd = "0" + dd;
     }
     if (mm < 10) {
-        mm = '0' + mm;
+        mm = "0" + mm;
     }
-    today = yyyy + '/' + mm + '/' + dd;
+    today = yyyy + "/" + mm + "/" + dd;
     return today;
 }
