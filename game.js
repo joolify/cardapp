@@ -18,8 +18,36 @@ document.getElementById("saveGame").addEventListener("click", saveGame);
 document.getElementById("saveGame").disabled = true;
 document.getElementById("pauseGame").disabled = true;
 
+init();
 showScoreBoard();
 
+function init() {
+    var scores = JSON.parse(localStorage.getItem('scores'));
+    if (scores !== null) {
+        let tableRef = document.getElementById('scoreBoard').getElementsByTagName('tbody')[0];
+        scores.forEach(
+            function (score) {
+                let newRow = tableRef.insertRow(tableRef.rows.length);
+
+                let newName = newRow.insertCell(0);
+                let nameText = document.createTextNode(score.name);
+                newName.appendChild(nameText);
+
+                let newDate = newRow.insertCell(1);
+                let dateText = document.createTextNode(score.date);
+                newDate.appendChild(dateText);
+
+                let newScore = newRow.insertCell(2);
+                let scoreText = document.createTextNode(score.score);
+                newScore.appendChild(scoreText);
+
+                let newTime = newRow.insertCell(3);
+                let timeText = document.createTextNode(score.time);
+                newTime.appendChild(timeText);
+            }
+        );
+    }
+}
 function showScoreBoard() {
     let rows = document.getElementById('scoreBoard').getElementsByTagName('tbody')[0].rows.length;
     if (rows === 0)
@@ -34,7 +62,7 @@ function newGame() {
 
     document.getElementById("seconds").innerHTML = "00";
     document.getElementById("minutes").innerHTML = "00";
-        
+
     document.getElementById("saveGame").disabled = true;
     document.getElementById("pauseGame").disabled = false;
 
@@ -84,7 +112,8 @@ function saveGame() {
         newName.appendChild(nameText);
 
         let newDate = newRow.insertCell(1);
-        let dateText = document.createTextNode(getDate());
+        let nowDate = getDate();
+        let dateText = document.createTextNode(nowDate);
         newDate.appendChild(dateText);
 
         let newScore = newRow.insertCell(2);
@@ -94,6 +123,21 @@ function saveGame() {
         let newTime = newRow.insertCell(3);
         let timeText = document.createTextNode(gameState.totalSeconds);
         newTime.appendChild(timeText);
+
+        var scoreObj = {
+            name: name,
+            date: nowDate,
+            score: gameState.score,
+            time: gameState.totalSeconds
+        };
+
+        var scores = JSON.parse(localStorage.getItem('scores'));
+        if (scores === null) {
+            localStorage.setItem('scores', JSON.stringify([scoreObj]));
+        } else {
+            scores.push(scoreObj);
+            localStorage.setItem('scores', JSON.stringify(scores));
+        }
 
         showScoreBoard();
     }
