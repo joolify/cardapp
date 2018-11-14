@@ -3,9 +3,11 @@
     time: null,
     isPaused: false,
     remaining: null,
-    lastCard: "none",
+    lastPlayerCard: "none",
+    lastComputerCard: "none",
     timer: null,
-    deckid: null
+    deckid: null,
+    baseUrl: "https://deckofcardsapi.com/api/deck/"
 };
 
 $(function () {
@@ -34,7 +36,7 @@ function initScoreBoard() {
                     "</td><td>" +
                     score.score +
                     "</td><td>" +
-                    score.time +
+                    formatTime(score.time) +
                     "</td></tr>");
             }
         );
@@ -68,36 +70,29 @@ function newGame() {
         .done(function (data) {
             gameState.deckid = data.deck_id;
             gameState.remaining = data.remaining;
-            $("#newGame").prop("disabled", false);
-            $("#newGame").html("Draw");
-            $("#newGame").off("click");
-            $("#newGame").click(drawCard);
+
+            drawCards();
         });
 
-    /*
-    let deck = getDeck();
-    let dealtCards = dealCards(deck);
-
-    gameState.playerCards = dealtCards.playerCards;
-    gameState.computerCards = dealtCards.computerCards;
-    */
     gameState.timer = setInterval(setTime, 1000);
 }
 
 function pauseGame() {
     gameState.isPaused = true;
-    $("#newGame").prop("disabled", true);
     $("#pauseGame").html("Start");
     $("#pauseGame").off("click");
     $("#pauseGame").click(startGame);
+    $("#playerCard").off("click");
+    $("#playerCard").removeClass("clickable");
 }
 
 function startGame() {
     gameState.isPaused = false;
-    $("#newGame").prop("disabled", false);
     $("#pauseGame").html("Pause");
     $("#pauseGame").off("click");
     $("#pauseGame").click(pauseGame);
+    $("#playerCard").click(playCard);
+    $("#playerCard").addClass("clickable");
 }
 
 function saveGame() {
@@ -113,7 +108,7 @@ function saveGame() {
             "</td><td>" +
             gameState.score +
             "</td><td>" +
-            gameState.time +
+            formatTime(gameState.time) +
             "</td></tr>");
 
         let scoreObj = {
@@ -136,44 +131,40 @@ function saveGame() {
     $("#saveGame").prop("disabled", true);
 }
 
-function drawCard() {
+function isGameOver() {
     if (gameState.remaining > 0) {
-        $("#discardCard").attr("src", gameState.lastCard.image);
+        $("#newGame").prop("disabled", true);
+        $("#pauseGame").prop("disabled", true);
 
-        drawCards();
-
+        return false;
     } else {
         clearInterval(gameState.timer);
         $("#deckCard").attr("src", "images/none.png");
-
-        $("#pauseGame").prop("disabled", true);
-
-        $("#newGame").html("New Game");
-        $("#newGame").off("click");
-        $("#newGame").click(newGame);
 
         if (gameState.score > 0) {
             alert("You won! Your score was: " + gameState.score);
         } else {
             alert("You lost! Your score was: " + gameState.score);
         }
+
+        $("#pauseGame").prop("disabled", true);
+        $("#newGame").prop("disabled", false);
         $("#saveGame").prop("disabled", false);
+        return true;
     }
 }
 
 function drawCards() {
     $("#playerCard").attr("src", "images/loading.gif");
-    $.getJSON("https://deckofcardsapi.com/api/deck/" + gameState.deckid + "/draw/", { count: 1 })
+    $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
         .done(function (deck) {
-            let playerCard = drawPlayerCard(deck);
+            drawPlayerCard(deck);
 
             $("#computerCard").attr("src", "images/loading.gif");
-            $("#newGame").prop("disabled", true);
-            $("#pauseGame").prop("disabled", true);
 
             window.setTimeout(
                 function () {
-                    drawComputerCard(playerCard);
+                    drawComputerCard();
                 }, Math.floor(Math.random() * 3000));
         });
 }
@@ -182,24 +173,34 @@ function drawPlayerCard(deck) {
     gameState.remaining = deck.remaining;
     let playerCard = deck.cards[0];
     $("#playerCard").attr("src", playerCard.image);
-    gameState.lastCard = playerCard;
-    return playerCard;
+    gameState.lastPlayerCard = playerCard;
 }
 
-function drawComputerCard(playerCard) {
-    $.getJSON("https://deckofcardsapi.com/api/deck/" + gameState.deckid + "/draw/", { count: 1 })
+function drawComputerCard() {
+    $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
         .done(function (deck) {
             gameState.remaining = deck.remaining;
+
             let computerCard = deck.cards[0];
             $("#computerCard").attr("src", computerCard.image);
-            gameState.score += match(playerCard, computerCard);
-            $("#score").html(gameState.score);
-            $("#newGame").prop("disabled", false);
             $("#pauseGame").prop("disabled", false);
+            $("#playerCard").click(playCard);
+            $("#playerCard").addClass("clickable");
+            gameState.lastComputerCard = computerCard;
         });
 }
 
+function playCard() {
+    gameState.score += match(gameState.lastPlayerCard, gameState.lastComputerCard);
+    $("#score").html(gameState.score);
 
+    $("#playerCard").off("click");
+    $("#playerCard").removeClass("clickable");
+    $("#discardCard").attr("src", gameState.lastPlayerCard.image);
+
+    if (!isGameOver())
+        drawCards();
+}
 
 function match(card1, card2) {
     if (card1.code.slice(0, 1) === card2.code.slice(0, 1))
@@ -217,6 +218,9 @@ function setTime() {
     }
 }
 
+function formatTime(time) {
+    return pad(parseInt(time / 60)) + ":" + pad(time % 60);
+}
 function pad(val) {
     let valString = val + "";
     if (valString.length < 2) {
