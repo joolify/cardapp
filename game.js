@@ -57,14 +57,7 @@ function newGame() {
 
             $("#computerCard").attr("src", "images/loading.gif");
 
-            (function loop() {
-                var rand = Math.round(Math.random() * 3000);
-                gameState.gameloop = setTimeout(function () {
-                    drawComputerCard();
-                    loop();
-                }, rand);
-            }());
-
+            startGameLoop();
         });
 
     gameState.timer = setInterval(setTime, 1000);
@@ -88,6 +81,10 @@ function startGame() {
     $("#playerCard").click(playCard);
     $("#playerCard").addClass("clickable");
 
+    startGameLoop();
+}
+
+function startGameLoop() {
     (function loop() {
         var rand = Math.round(Math.random() * 3000);
         gameState.gameloop = setTimeout(function () {
