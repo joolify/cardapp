@@ -13,19 +13,22 @@
 };
 
 $(function () {
-    $("#newGame").click(newGame);
-    $("#pauseGame").click(pauseGame);
-    $("#saveGame").click(saveGame);
-    $("#highScores").click(highScores);
+    $("#btnNewGame").click(newGame);
+    $("#btnPauseGame").click(pauseGame);
+    $("#btnSaveGame").click(saveGame);
+    $("#btnHighScores").click(highScores);
+    $("#btnFeedback").click(feedback);
 
-    $("#saveGame").prop("disabled", true);
-    $("#pauseGame").prop("disabled", true);
+    $("#btnSaveGame").prop("disabled", true);
+    $("#btnPauseGame").prop("disabled", true);
     $("#scoreBoard").hide();
+    $("#feedback").hide();
 });
 
 function newGame() {
     $("#game").show();
     $("#scoreBoard").hide();
+    $("#feedback").hide();
 
     gameState.score = 0;
     gameState.time = 0;
@@ -33,10 +36,11 @@ function newGame() {
     $("#seconds").html("00");
     $("#minutes").html("00");
 
-    $("#newGame").prop("disabled", true);
-    $("#saveGame").prop("disabled", true);
-    $("#pauseGame").prop("disabled", false);
-    $("#highScores").prop("disabled", true);
+    $("#btnNewGame").prop("disabled", true);
+    $("#btnSaveGame").prop("disabled", true);
+    $("#btnPauseGame").prop("disabled", false);
+    $("#btnHighScores").prop("disabled", true);
+    $("#btnFeedback").prop("disabled", true);
 
     $("#deckCard").attr("src", "images/red_back.png");
     $("#playerCard").attr("src", "images/none.png");
@@ -59,9 +63,9 @@ function newGame() {
 
 function pauseGame() {
     gameState.isPaused = true;
-    $("#pauseGame").html("Start");
-    $("#pauseGame").off("click");
-    $("#pauseGame").click(startGame);
+    $("#btnPauseGame").html("Start");
+    $("#btnPauseGame").off("click");
+    $("#btnPauseGame").click(startGame);
     $("#playerCard").off("click");
     $("#playerCard").removeClass("clickable");
     clearInterval(gameState.gameloop);
@@ -69,9 +73,9 @@ function pauseGame() {
 
 function startGame() {
     gameState.isPaused = false;
-    $("#pauseGame").html("Pause");
-    $("#pauseGame").off("click");
-    $("#pauseGame").click(pauseGame);
+    $("#btnPauseGame").html("Pause");
+    $("#btnPauseGame").off("click");
+    $("#btnPauseGame").click(pauseGame);
     $("#playerCard").click(playCard);
     $("#playerCard").addClass("clickable");
     gameState.gameloop = setInterval(drawComputerCard, Math.floor(Math.random() * 3000));
@@ -97,14 +101,78 @@ function saveGame() {
         }
         highScores();
     }
-    $("#saveGame").prop("disabled", true);
-    $("#highScores").prop("disabled", false);
+    $("#btnSaveGame").prop("disabled", true);
+    $("#btnHighScores").prop("disabled", false);
+    $("#btnFeedback").prop("disabled", false);
 }
 
 function highScores() {
     $("#game").hide();
+    $("#feedback").hide();
     $("#scoreBoard").show();
+
     showScoreBoard();
+}
+
+function feedback() {
+    $("#game").hide();
+    $("#scoreBoard").hide();
+    $("#feedback").show();
+    $("#feedback").load("feedback.html", feedbackLoad);
+}
+
+function feedbackLoad() {
+    $("#feedbackForm").submit(feedbackSubmit);
+    $("#happinessValue").text($("#happiness").val());
+    $("#happiness").mousemove(showHappiness);
+    showFeedback();
+}
+
+function feedbackSubmit(e) {
+    $("#game").hide();
+    $("#scoreBoard").hide();
+
+    let feedbackObj = {
+        name: $("#name").val(),
+        happiness: $("#happiness").val(),
+        color: $("#color").val()
+    };
+
+    let feedback = JSON.parse(localStorage.getItem("feedback"));
+    if (feedback === null) {
+        localStorage.setItem("feedback", JSON.stringify([feedbackObj]));
+    } else {
+        feedback.push(feedbackObj);
+        localStorage.setItem("feedback", JSON.stringify(feedback));
+    }
+
+    showFeedback();
+
+    e.preventDefault();
+}
+
+function showHappiness() {
+    $("#happinessValue").text($("#happiness").val());
+}
+
+function showFeedback() {
+    let feedback = JSON.parse(localStorage.getItem("feedback"));
+    let tableRef = $("#feedbackTable tbody");
+    tableRef.empty();
+    feedback.forEach(
+        function (fObj) {
+            let row = $("<tr><td>" +
+                fObj.name +
+                "</td><td>" +
+                fObj.happiness +
+                "</td></tr>"
+            );
+            let cell = $("<td>");
+            cell.css('background-color', fObj.color);
+            row.append(cell);
+            tableRef.append(row);
+        }
+    );
 }
 
 function isGameOver() {
@@ -124,10 +192,11 @@ function isGameOver() {
             alert("You lost! Your score was: " + gameState.score);
         }
 
-        $("#pauseGame").prop("disabled", true);
-        $("#newGame").prop("disabled", false);
-        $("#saveGame").prop("disabled", false);
-        $("#highScores").prop("disabled", false);
+        $("#btnPauseGame").prop("disabled", true);
+        $("#btnNewGame").prop("disabled", false);
+        $("#btnSaveGame").prop("disabled", false);
+        $("#btnHighScores").prop("disabled", false);
+        $("#btnFeedback").prop("disabled", false);
         return true;
     }
 }
@@ -160,7 +229,7 @@ function drawComputerCard() {
                 let computerCard = deck.cards[0];
                 if (computerCard !== undefined) {
                     $("#computerCard").attr("src", computerCard.image);
-                    $("#pauseGame").prop("disabled", false);
+                    $("#btnPauseGame").prop("disabled", false);
                     gameState.lastComputerCard = computerCard;
                 }
             });

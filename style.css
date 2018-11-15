@@ -71,7 +71,7 @@ main {
 .container {
     position: relative;
     width: 60%;
-    height: 500px;
+    min-height: 500px; 
     margin-top: 30px;
     margin-left: auto;
     margin-right: auto;
@@ -124,4 +124,21 @@ a:hover {
 
 a:active {
     color: #3e8e41;
+}
+
+fieldset {
+    display: block;
+    border: 1px solid black;
+}
+
+:invalid {
+    border: 1px dashed red;
+}
+
+fieldset:valid {
+    border: 1px dashed green;
+}
+
+#feedbackTable {
+    width: 100%;
 }

@@ -1,0 +1,43 @@
+﻿<form id="feedbackForm">
+    <fieldset>
+        <legend>Feedback</legend>
+
+        <p>
+            <label>Name: </label>
+            <input type="text" id="name" placeholder="Enter name..."  required/>
+        </p>
+
+        <p>
+            <label>How Happy are you with your score? </label><br />
+            <input type="range" id="happiness" min="0" max="5">
+            <label id="happinessValue"></label>
+        </p>
+
+        <p>
+            <label>What's your favorite color?</label><br />
+            <input type="color" id="color" />
+        </p>
+
+        <p>
+            <input type="submit">
+        </p>
+
+    </fieldset>
+</form>
+
+<table id="feedbackTable">
+    <thead>
+        <tr>
+            <td>
+                Name:
+            </td>
+            <td>
+                Happy meter:
+            </td>
+            <td>
+                Favorite color:
+            </td>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
