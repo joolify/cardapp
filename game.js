@@ -195,7 +195,7 @@ function isGameOver() {
     if (!gameState.gameOver) {
         gameState.gameOver = true;
         clearInterval(gameState.timer);
-        clearInterval(gameState.gameloop);
+        clearTimeout(gameState.gameloop);
 
         $("#deckCard").attr("src", "images/none.png");
 
