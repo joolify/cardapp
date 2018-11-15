@@ -169,23 +169,25 @@ function showHappiness() {
 }
 
 function showFeedback() {
-    let feedback = JSON.parse(localStorage.getItem("feedback"));
+    let feedbacks = JSON.parse(localStorage.getItem("feedback"));
     let tableRef = $("#feedbackTable tbody");
     tableRef.empty();
-    feedback.forEach(
-        function (fObj) {
-            let row = $("<tr><td>" +
-                fObj.name +
-                "</td><td>" +
-                fObj.happiness +
-                "</td></tr>"
-            );
-            let cell = $("<td>");
-            cell.css('background-color', fObj.color);
-            row.append(cell);
-            tableRef.append(row);
-        }
-    );
+    if (feedbacks !== null) {
+        feedbacks.forEach(
+            function (feedback) {
+                let row = $("<tr><td>" +
+                    feedback.name +
+                    "</td><td>" +
+                    feedback.happiness +
+                    "</td></tr>"
+                );
+                let cell = $("<td>");
+                cell.css('background-color', feedback.color);
+                row.append(cell);
+                tableRef.append(row);
+            }
+        );
+    }
 }
 
 function isGameOver() {
@@ -216,7 +218,6 @@ function isGameOver() {
 
 function drawPlayerCard() {
     if (!isGameOver()) {
-        //$("#playerCard").attr("src", "images/loading.gif");
         $.getJSON(gameState.baseUrl + gameState.deckid + "/draw/", { count: 1 })
             .done(function (deck) {
                 gameState.remaining = deck.remaining;
