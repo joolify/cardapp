@@ -151,12 +151,12 @@ function feedbackSubmit(e) {
         color: $("#color").val()
     };
 
-    let feedback = JSON.parse(localStorage.getItem("feedback"));
-    if (feedback === null) {
-        localStorage.setItem("feedback", JSON.stringify([feedbackObj]));
+    let feedbacks = JSON.parse(localStorage.getItem("feedbacks"));
+    if (feedbacks === null) {
+        localStorage.setItem("feedbacks", JSON.stringify([feedbackObj]));
     } else {
-        feedback.push(feedbackObj);
-        localStorage.setItem("feedback", JSON.stringify(feedback));
+        feedbacks.push(feedbackObj);
+        localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
     }
 
     showFeedback();
@@ -169,7 +169,7 @@ function showHappiness() {
 }
 
 function showFeedback() {
-    let feedbacks = JSON.parse(localStorage.getItem("feedback"));
+    let feedbacks = JSON.parse(localStorage.getItem("feedbacks"));
     let tableRef = $("#feedbackTable tbody");
     tableRef.empty();
     if (feedbacks !== null) {
