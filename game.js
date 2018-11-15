@@ -16,40 +16,17 @@ $(function () {
     $("#newGame").click(newGame);
     $("#pauseGame").click(pauseGame);
     $("#saveGame").click(saveGame);
+    $("#highScores").click(highScores);
 
     $("#saveGame").prop("disabled", true);
     $("#pauseGame").prop("disabled", true);
-
-    showScoreBoard();
+    $("#scoreBoard").hide();
 });
 
-function showScoreBoard() {
-    let scores = JSON.parse(localStorage.getItem("scores"));
-    if (scores !== null) {
-        scores.sort(SortByName);
-        let tableRef = $("#scoreBoard tbody");
-        tableRef.empty();
-        scores.forEach(
-            function (score) {
-                tableRef.append("<tr><td>" +
-                    score.name +
-                    "</td><td>" +
-                    score.date +
-                    "</td><td>" +
-                    score.score +
-                    "</td><td>" +
-                    formatTime(score.time) +
-                    "</td></tr>");
-            }
-        );
-    }
-}
-
-function SortByName(a, b) {
-    return ((a.score < b.score) ? 1 : ((a.score > b.score) ? -1 : 0));
-}
-
 function newGame() {
+    $("#game").show();
+    $("#scoreBoard").hide();
+
     gameState.score = 0;
     gameState.time = 0;
 
@@ -59,6 +36,7 @@ function newGame() {
     $("#newGame").prop("disabled", true);
     $("#saveGame").prop("disabled", true);
     $("#pauseGame").prop("disabled", false);
+    $("#highScores").prop("disabled", true);
 
     $("#deckCard").attr("src", "images/red_back.png");
     $("#playerCard").attr("src", "images/none.png");
@@ -117,10 +95,16 @@ function saveGame() {
             scores.push(scoreObj);
             localStorage.setItem("scores", JSON.stringify(scores));
         }
-
-        showScoreBoard();
+        highScores();
     }
     $("#saveGame").prop("disabled", true);
+    $("#highScores").prop("disabled", false);
+}
+
+function highScores() {
+    $("#game").hide();
+    $("#scoreBoard").show();
+    showScoreBoard();
 }
 
 function isGameOver() {
@@ -143,6 +127,7 @@ function isGameOver() {
         $("#pauseGame").prop("disabled", true);
         $("#newGame").prop("disabled", false);
         $("#saveGame").prop("disabled", false);
+        $("#highScores").prop("disabled", false);
         return true;
     }
 }
@@ -192,6 +177,32 @@ function playCard() {
 
     drawPlayerCard();
     drawComputerCard();
+}
+
+function showScoreBoard() {
+    let scores = JSON.parse(localStorage.getItem("scores"));
+    if (scores !== null) {
+        scores.sort(SortByName);
+        let tableRef = $("#scoreBoard tbody");
+        tableRef.empty();
+        scores.forEach(
+            function (score) {
+                tableRef.append("<tr><td>" +
+                    score.name +
+                    "</td><td>" +
+                    score.date +
+                    "</td><td>" +
+                    score.score +
+                    "</td><td>" +
+                    formatTime(score.time) +
+                    "</td></tr>");
+            }
+        );
+    }
+}
+
+function SortByName(a, b) {
+    return ((a.score < b.score) ? 1 : ((a.score > b.score) ? -1 : 0));
 }
 
 function match(card1, card2) {

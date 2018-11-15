@@ -12,57 +12,64 @@
 </head>
 <body>
     <div class="container">
+
         <section class="sidenav">
             <div class="btn-group">
                 <button class="button" id="newGame">New game</button>
                 <button class="button" id="pauseGame">Pause</button>
                 <button class="button" id="saveGame">Save</button>
+                <button class="button" id="highScores">High scores</button>
             </div>
         </section>
 
         <main>
             <h1>The Ultimate Card Game!</h1>
-            <header>
-                <nav>
-                    <ul>
-                        <li><a href="#">Play!</a></li>
-                        <li><a href="#">Saved games</a></li>
-                    </ul>
-                </nav>
-                <section>
-                    <img src="images/time.svg" width="20" height="20" /> <time><label id="minutes">00</label><span class='bigger'>:</span><label id="seconds">00</label></time>
-                    <img src="images/score.svg" width="20" height="20" /> <span>Current score: <span id="score">0</span></span>
-                </section>
-            </header>
 
-            <div class="row">
-                <div class="column">
-                    Deck:
+            <div class="game" id="game">
+
+                <header>
+                    <nav>
+                        <ul>
+                            <li><a href="#">Play!</a></li>
+                            <li><a href="#">Saved games</a></li>
+                        </ul>
+                    </nav>
+                    <section>
+                        <img src="images/time.svg" width="20" height="20" /> <time><label id="minutes">00</label><span class='bigger'>:</span><label id="seconds">00</label></time>
+                        <img src="images/score.svg" width="20" height="20" /> <span>Current score: <span id="score">0</span></span>
+                    </section>
+                </header>
+
+                <div class="row">
+                    <div class="column">
+                        Deck:
+                    </div>
+                    <div class="column">
+                        Player:
+                    </div>
+                    <div class="column">
+                        Computer:
+                    </div>
+                    <div class="column">
+                        Discard:
+                    </div>
                 </div>
-                <div class="column">
-                    Player:
-                </div>
-                <div class="column">
-                    Computer:
-                </div>
-                <div class="column">
-                    Discard:
+                <div class="row">
+                    <div class="column">
+                        <img src="images/none.png" class="card" id="deckCard" />
+                    </div>
+                    <div class="column">
+                        <img src="images/none.png" class="card" id="playerCard" />
+                    </div>
+                    <div class="column">
+                        <img src="images/none.png" class="card" id="computerCard" />
+                    </div>
+                    <div class="column">
+                        <img src="images/none.png" class="card" id="discardCard" />
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="column">
-                    <img src="images/none.png" class="card" id="deckCard" />
-                </div>
-                <div class="column">
-                    <img src="images/none.png" class="card" id="playerCard" />
-                </div>
-                <div class="column">
-                    <img src="images/none.png" class="card" id="computerCard" />
-                </div>
-                <div class="column">
-                    <img src="images/none.png" class="card" id="discardCard" />
-                </div>
-            </div>
+
             <table class="scoreBoard" id="scoreBoard">
                 <thead>
                     <tr>
