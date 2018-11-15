@@ -6,10 +6,27 @@
     height: 100%; 
 }
 
+.flexCards {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
 .card {
-    max-width: 50%;
-    display: block;
-    height: auto;
+    width: 150px;
+}
+
+figure {
+    margin: 10px; 
+}
+
+#playerCard:hover {
+    transform: rotate(-5deg) scale(1.05);
+    transition: transform 0.2s;
+}
+
+#playerCard:active {
+    transform: rotate(-360deg) scale(1.05);
 }
 
 .column {
